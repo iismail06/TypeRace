@@ -65,8 +65,8 @@ header h1 {
 }
 
 #sample-text.is-fading-out {
-  opacity: 0;
-  pointer-events: none;
+    opacity: .18;        /* was 0 */
+    pointer-events: none;
 }
 
 /* Typing highlight system */
@@ -132,6 +132,9 @@ header h1 {
 #results-area p {
     margin:0 0 .6rem;
     font-weight:600;
+}
+#best-results li {
+  padding: 2px 0;
 }
 
 /* === Mobile Tweaks === */

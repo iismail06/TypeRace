@@ -60,12 +60,21 @@ function init() {
   let testActive = false;
   let startTime  = 0;
   let currentPassage = '';
+  let lastPassage = '';
+  const BEST_STORAGE_KEY = 'typerace_best_results_v1';
+  let bestResults = loadBestResults(); // { easy:{wpm:0}, medium:{wpm:0}, hard:{wpm:0} }
 
   /* PASSAGE / DISPLAY */
   function getRandomPassage(level) {
     const key = (level || 'easy').toLowerCase();
     const list = PASSAGES[key] || PASSAGES.easy;
-    return list[Math.floor(Math.random() * list.length)];
+    if (list.length === 1) return list[0];
+    let pick;
+    do {
+      pick = list[Math.floor(Math.random() * list.length)];
+    } while (pick === lastPassage);
+    lastPassage = pick;
+    return pick;
   }
 
   function applyNewPassage() {
@@ -76,9 +85,11 @@ function init() {
     resetHighlight();
   }
 
-  function cap(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  }
+  function cap(str) { return str.charAt(0).toUpperCase() + str.slice(1); }
+
+  // === Fade helpers (moved INSIDE so sampleTextEl is in scope) ===
+  function fadeOutSample() { sampleTextEl.classList.add('is-fading-out'); }
+  function fadeInSample()  { sampleTextEl.classList.remove('is-fading-out'); }
 
   /* HIGHLIGHTING */
   function resetHighlight() {
@@ -149,6 +160,35 @@ function init() {
     return Math.round(correctWords / (elapsedSeconds / 60));
   }
 
+  function loadBestResults() {
+    try {
+      const raw = localStorage.getItem(BEST_STORAGE_KEY);
+      if (!raw) return { easy:{wpm:0}, medium:{wpm:0}, hard:{wpm:0} };
+      const parsed = JSON.parse(raw);
+      // Ensure all keys exist
+      ['easy','medium','hard'].forEach(k=>{
+        if (!parsed[k]) parsed[k]={wpm:0};
+        if (typeof parsed[k].wpm !== 'number') parsed[k].wpm = 0;
+      });
+      return parsed;
+    } catch(e) {
+      return { easy:{wpm:0}, medium:{wpm:0}, hard:{wpm:0} };
+    }
+  }
+
+  function saveBestResults() {
+    localStorage.setItem(BEST_STORAGE_KEY, JSON.stringify(bestResults));
+  }
+
+  function updateBestResultsUI() {
+    const be = document.getElementById('best-easy-wpm');
+    const bm = document.getElementById('best-medium-wpm');
+    const bh = document.getElementById('best-hard-wpm');
+    if (be) be.textContent = bestResults.easy.wpm;
+    if (bm) bm.textContent = bestResults.medium.wpm;
+    if (bh) bh.textContent = bestResults.hard.wpm;
+  }
+
   /* TEST CONTROL */
   function startTest() {
     if (testActive) return;
@@ -165,8 +205,6 @@ function init() {
     startBtn.disabled = true;
     stopBtn.disabled = false;
     difficultySelect.disabled = true;
-
-    fadeOutSample();
   }
 
   function stopTest() {
@@ -175,12 +213,20 @@ function init() {
     if (timeSpan) timeSpan.textContent = elapsedSec.toFixed(2);
     const correctWords = countCorrectWords(currentPassage, getUserInput());
     if (wpmSpan) wpmSpan.textContent = computeWPM(correctWords, elapsedSec).toString();
+
+    const diff = difficultySelect.value.toLowerCase();
+    const currentWpm = parseInt(wpmSpan.textContent, 10) || 0;
+    if (currentWpm > (bestResults[diff]?.wpm || 0)) {
+      bestResults[diff].wpm = currentWpm;
+      saveBestResults();
+      updateBestResultsUI();
+    }
+
     testActive = false;
     startBtn.disabled = false;
     stopBtn.disabled = true;
     difficultySelect.disabled = false;
     inputEl.disabled = true;
-
     fadeInSample();
   }
 
@@ -195,23 +241,26 @@ function init() {
     startBtn.disabled = false;
     stopBtn.disabled = true;
     difficultySelect.disabled = false;
-
     fadeInSample();
   }
 
   /* EVENTS */
   inputEl.addEventListener('input', updateHighlighting);
   inputEl.addEventListener('scroll', syncScroll);
+
   startBtn.addEventListener('click', () => {
     if (!currentPassage) applyNewPassage();
     startTest();
   });
   stopBtn.addEventListener('click', stopTest);
+
+  // CLEAN Retry: single handler (removed cloneNode + duplicate listener)
   retryBtn.addEventListener('click', () => {
     if (testActive) stopTest();
     resetTestState();
-    applyNewPassage();
+    applyNewPassage(); // guaranteed different from last (non-repeat logic)
   });
+
   difficultySelect.addEventListener('change', () => {
     if (testActive) return;
     applyNewPassage();
@@ -221,8 +270,8 @@ function init() {
   /* INIT */
   applyNewPassage();
   resetTestState();
-  // Minimal inline fallback styles for highlighting (if CSS missing)
   injectFallbackStyles();
+  updateBestResultsUI();
 }
 
 /* UTILITIES */
@@ -249,12 +298,4 @@ function injectFallbackStyles() {
   style.id = 'typing-fallback-styles';
   style.textContent = css;
   document.head.appendChild(style);
-}
-
-function fadeOutSample() {
-  sampleTextEl.classList.add('is-fading-out');
-}
-
-function fadeInSample() {
-  sampleTextEl.classList.remove('is-fading-out');
 }

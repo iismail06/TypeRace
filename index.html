@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="assets/css/style.css">
     <title>TypeRacer</title>
 </head>
+
 <body>
     <!-- Site Header: brand title + future instructions trigger -->
     <header>
@@ -14,8 +16,8 @@
             <div class="row">
                 <div class="col-md-12 text-center my-4">
                     <h1>TypeRacer</h1>
-                    <button class="btn btn-light mt-3" id="instructions-btn"
-        data-bs-toggle="modal" data-bs-target="#instructionsModal">
+                    <button class="btn btn-light mt-3" id="instructions-btn" data-bs-toggle="modal"
+                        data-bs-target="#instructionsModal">
                         <i class="fas fa-info-circle"></i> Instructions
                     </button>
                 </div>
@@ -45,12 +47,14 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label visually-hidden" for="user-input">Type Here</label>
-                        <textarea class="form-control" id="user-input" rows="6" placeholder="Click the start button to begin the test" disabled></textarea>
+                        <textarea class="form-control" id="user-input" rows="6"
+                            placeholder="Click the start button to begin the test" disabled></textarea>
                     </div>
                     <div class="mb-3 text-center">
                         <button class="btn btn-lg btn-outline-orange" id="start-btn">Start</button>
                         <button class="btn btn-lg btn-outline-orange" id="stop-btn" disabled>Stop</button>
-                        <button class="btn btn-lg btn-outline-orange" id="retry-btn">Retry</button>
+                        <button class="btn btn-lg btn-outline-orange" id="retry-btn"
+                            aria-label="Retry typing test">Retry</button>
                     </div>
                 </div>
                 <!-- Results Column (Secondary) -->
@@ -66,6 +70,12 @@
                         <div>
                             <p>WPM: <span id="wpm">0</span></p>
                         </div>
+                        <p class="mt-3 mb-1 fw-bold">Best WPM</p>
+                        <ul id="best-results" class="list-unstyled small mb-0">
+                            <li>Easy: <span id="best-easy-wpm">0</span></li>
+                            <li>Medium: <span id="best-medium-wpm">0</span></li>
+                            <li>Hard: <span id="best-hard-wpm">0</span></li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -75,46 +85,48 @@
     <script src="https://kit.fontawesome.com/YOUR-KIT-CODE-HERE.js" crossorigin="anonymous"></script>
     <script src="assets/js/script.js"></script>
 
-    <!-- Add this modal block just BEFORE the closing </body> tag (after other scripts) -->
-<div class="modal fade" id="instructionsModal" tabindex="-1" aria-labelledby="instructionsTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="instructionsTitle">How to Use the Typing Test</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <ol class="mb-3 ps-3">
-          <li><strong>Select a difficulty</strong> (Easy, Medium, Hard) from the dropdown.</li>
-          <li>Click <strong>Start</strong>. The passage fades out and the typing area activates.</li>
-          <li><strong>Type</strong> the passage exactly. Characters you type:
-            <ul class="small mt-2">
-              <li><span class="badge bg-success">Green</span> = correct character</li>
-              <li><span class="badge bg-danger">Red</span> = incorrect character</li>
-              <li>Grey (faint) text shows what is left to type.</li>
-            </ul>
-          </li>
-          <li>Click <strong>Stop</strong> when you finish (or stop early) to see:
-            <ul class="small mt-2">
-              <li><strong>Time</strong> (seconds)</li>
-              <li><strong>WPM</strong> (whole number, only fully correct words counted)</li>
-              <li><strong>Level</strong> (your chosen difficulty)</li>
-            </ul>
-          </li>
-          <li>Click <strong>Retry</strong> for a new random passage at the same difficulty, or change difficulty and Start again.</li>
-        </ol>
-        <p class="mb-2"><strong>Tips:</strong></p>
-        <ul class="small mb-0 ps-3">
-          <li>Focus on accuracy first—speed follows.</li>
-          <li>Don’t backspace every tiny error; note patterns and improve next run.</li>
-          <li>Use the same posture & position for consistency.</li>
-        </ul>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-outline-orange" data-bs-dismiss="modal">Got it</button>
-      </div>
+    <!-- Instructions Modal -->
+    <div class="modal fade" id="instructionsModal" tabindex="-1" aria-labelledby="instructionsTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="instructionsTitle">How to Use the Typing Test</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ol class="mb-3 ps-3">
+                        <li><strong>Select a difficulty</strong> (Easy, Medium, Hard) from the dropdown.</li>
+                        <li>Click <strong>Start</strong>. The passage fades out and the typing area activates.</li>
+                        <li><strong>Type</strong> the passage exactly. Characters you type:
+                            <ul class="small mt-2">
+                                <li><span class="badge bg-success">Green</span> = correct character</li>
+                                <li><span class="badge bg-danger">Red</span> = incorrect character</li>
+                                <li>Grey (faint) text shows what is left to type.</li>
+                            </ul>
+                        </li>
+                        <li>Click <strong>Stop</strong> when you finish (or stop early) to see:
+                            <ul class="small mt-2">
+                                <li><strong>Time</strong> (seconds)</li>
+                                <li><strong>WPM</strong> (whole number, only fully correct words counted)</li>
+                                <li><strong>Level</strong> (your chosen difficulty)</li>
+                            </ul>
+                        </li>
+                        <li>Click <strong>Retry</strong> for a new random passage at the same difficulty, or change
+                            difficulty and Start again.</li>
+                    </ol>
+                    <p class="mb-2"><strong>Tips:</strong></p>
+                    <ul class="small mb-0 ps-3">
+                        <li>Focus on accuracy first—speed follows.</li>
+                        <li>Don’t backspace every tiny error; note patterns and improve next run.</li>
+                        <li>Use the same posture & position for consistency.</li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline-orange" data-bs-dismiss="modal">Got it</button>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 </body>
+
 </html>
