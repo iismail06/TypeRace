@@ -1,5 +1,7 @@
 # TypeRace
 
+[View the live site here!]()
+
 ## 1. Project Goal
 
 Provide an engaging, device‑responsive typing test that helps users measure and improve typing speed and accuracy over time.
@@ -94,5 +96,61 @@ Engagement: ≥40% of users who finish one test start a second within the same v
 - Local storage key suggestion: typerace_results (JSON array of {wpm, accuracy, errors, timestamp}).
 - Live regions: aria-live="polite" for timer & interim WPM (if added).
 
+## 9. Wireframe & Visual Overview
+
+The new TypeRace website features a clean, modern, and responsive layout with a strong orange accent color. The interface is designed for clarity, ease of use, and visual appeal.
+
+**Main Layout:**
+
+- **Navigation Bar:** A top navigation bar with the site title and a prominent orange "Instructions" button.
+- **Hero Image:** A large, visually engaging hero image below the navbar, spanning 90% of the screen width with rounded corners and a subtle animation.
+- **Typing Test Area:**
+  - **Difficulty Selector:** Orange-accented dropdown for selecting Easy, Medium, or Hard.
+  - **Sample Passage Box:** Displays the passage to type, with an orange border and soft background.
+  - **Typing Box:** Clean white text box with black text, no overlays or hover effects, and a clear border.
+  - **Control Buttons:** Large, rounded orange buttons for Start, Stop, and Retry.
+- **Results Area:**
+  - Orange-bordered card showing Level, Time, WPM, and Best WPM for each difficulty.
+  - Smooth hover effect on results area for interactivity.
+- **Instructions Modal:** Accessible via the navbar button, providing clear, step-by-step guidance in a styled modal window.
+
+**Styling Highlights:**
+
+- Consistent use of orange for borders, buttons, and highlights.
+- Rounded corners and soft shadows for all cards and main boxes.
+- Responsive design for mobile and desktop.
+- No distracting overlays or hover effects on the typing box—just a clean, user-focused experience.
+
+**Wireframe Sketch:**
+
++---------------------------------------------------------------+
+| [TypeRacer]                [Instructions]                     |  <- Top Navbar (orange accent)
++---------------------------------------------------------------+
+|                                                               |
+|      +-----------------------------------------------+        |
+|      |         [Hero Image: Typing Illustration]     |        |
+|      +-----------------------------------------------+        |
+|                                                               |
++---------------------------------------------------------------+
+| [Difficulty: (Easy ▼)]                                        |
+| +---------------- Sample Passage Box ----------------------+   |
+| | "The quick brown fox jumps over the lazy dog."          |   |
+| +---------------------------------------------------------+   |
+| +------------------- Typing Box -------------------------+    |
+| | [Type here...]                                         |    |
+| +--------------------------------------------------------+    |
+| [Start]   [Stop]   [Retry]                                   |
++---------------------------------------------------------------+
+| +---------------- Results Area --------------------------+    |
+| | Level: Easy   Time: 0.00s   WPM: 0                    |    |
+| | Best WPM: Easy 0 | Medium 0 | Hard 0                  |    |
+| +-------------------------------------------------------+    |
++---------------------------------------------------------------+
 ---
-These user stories will guide backlog creation and iterative development.
+
+**Screenshots:**  
+"Add screenshots here when available to show the final look on desktop and mobile."
+
+---
+
+Let me know if you want a Figma wireframe or a hand-drawn sketch to include as needed.
