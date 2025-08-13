@@ -6,24 +6,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
     <title>TypeRacer</title>
 </head>
 
 <body>
     <!-- Site Header: brand title + future instructions trigger -->
     <header>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12 text-center my-4">
-                    <h1>TypeRacer</h1>
-                    <button class="btn btn-light mt-3" id="instructions-btn" data-bs-toggle="modal"
-                        data-bs-target="#instructionsModal">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4"
+            style="border-bottom: 3px solid var(--tr-orange);">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+                    <i class="fas fa-keyboard text-orange"></i>
+                    <span class="site-title mb-0"
+                        style="color:var(--tr-orange);font-family:var(--tr-font-heading);font-weight:700;font-size:2rem;">TypeRacer</span>
+                </a>
+                <div>
+                    <button class="btn btn-outline-orange me-2" data-bs-toggle="modal" data-bs-target="#instructionsModal">
                         <i class="fas fa-info-circle"></i> Instructions
                     </button>
+                    <!-- Add more nav buttons/links here if needed -->
                 </div>
             </div>
-        </div>
+        </nav>
     </header>
+    <div class="text-center my-4">
+        <div class="hero-img-wrapper">
+            <img src="assets/images/Typing.webp" alt="Typing illustration" class="img-fluid typing-hero">
+        </div>
+    </div>
 
     <!-- Main Content: left = typing interface, right = live results -->
     <main>
@@ -47,8 +58,11 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label visually-hidden" for="user-input">Type Here</label>
-                        <textarea class="form-control" id="user-input" rows="6"
-                            placeholder="Click the start button to begin the test" disabled></textarea>
+                        <div class="typing-wrapper" style="position:relative;">
+                            <div id="highlight-layer" aria-hidden="true"></div>
+                            <textarea id="user-input" class="form-control" rows="6"
+                                placeholder="Click the start button to begin the test" disabled></textarea>
+                        </div>
                     </div>
                     <div class="mb-3 text-center">
                         <button class="btn btn-lg btn-outline-orange" id="start-btn">Start</button>

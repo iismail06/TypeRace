@@ -97,35 +97,38 @@ function init() {
     inputEl.value = '';
   }
 
-  function escapeHTML(s) {
-    return s
-      .replace(/&/g,'&amp;')
-      .replace(/</g,'&lt;')
-      .replace(/>/g,'&gt;');
+  // Utility to escape HTML
+  function escapeHTML(str) {
+      return str.replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
   }
 
+  // Build highlighted HTML comparing typed vs sample char-by-char
   function buildHighlightHTML(typed, sample) {
-    let out = '';
-    const len = typed.length;
-    for (let i = 0; i < len; i++) {
-      const t = typed[i];
-      const s = sample[i];
-      const safe = escapeHTML(t);
-      if (s === undefined) {
-        out += `<span class="hl-incorrect">${safe}</span>`;
-      } else if (t === s) {
-        out += `<span class="hl-correct">${safe}</span>`;
-      } else {
-        out += `<span class="hl-incorrect">${safe}</span>`;
+      let out = '';
+      const len = typed.length;
+      for (let i = 0; i < len; i++) {
+          const tChar = typed[i];
+          const sChar = sample[i] || '';
+          const safe = escapeHTML(tChar);
+          if (sChar === undefined) {
+              out += `<span class="hl-incorrect">${safe}</span>`;
+          } else if (tChar === sChar) {
+              out += `<span class="hl-correct">${safe}</span>`;
+          } else {
+              out += `<span class="hl-incorrect">${safe}</span>`;
+          }
       }
-    }
-    const remaining = sample.slice(len);
-    if (remaining) {
-      out += `<span class="hl-pending">${escapeHTML(remaining)}</span>`;
-    }
-    return out;
+      // Remaining sample (not yet typed) shown faint
+      const remaining = sample.slice(len);
+      if (remaining.length) {
+          out += `<span class="hl-pending">${escapeHTML(remaining)}</span>`;
+      }
+      return out;
   }
 
+  // Update highlighting on each input event
   function updateHighlighting() {
     if (!testActive) return;
     if (!highlightLayer) return;
@@ -133,6 +136,7 @@ function init() {
     syncScroll();
   }
 
+  // Keep highlight and textarea scroll aligned
   function syncScroll() {
     if (!highlightLayer) return;
     highlightLayer.scrollTop  = inputEl.scrollTop;
@@ -199,6 +203,7 @@ function init() {
     inputEl.disabled = false;
     resetHighlight();
     if (highlightLayer) {
+      currentPassage = document.getElementById('sample-text').textContent.trim();
       highlightLayer.innerHTML = buildHighlightHTML('', currentPassage);
     }
     inputEl.focus();

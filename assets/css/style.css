@@ -13,16 +13,18 @@
 
 body {
     font-family:var(--tr-font-body);
-    background:var(--tr-bg);
+    background: linear-gradient(135deg, #fff8f0 0%, #f0f4ff 100%);
     margin:0;
     color:#222;
 }
 
 /* === Header Bar === */
 /* Solid orange strip with white text; inherits brand variables */
+/*
 header {
     background:var(--tr-orange);
     color:var(--tr-text-light);
+    box-shadow: 0 2px 12px rgba(255,132,0,0.08);
 }
 header h1 {
     font-family:var(--tr-font-heading);
@@ -30,6 +32,7 @@ header h1 {
     margin:0;
     color:var(--tr-text-light);
 }
+*/
 
 /* === Reusable Outline Button Variant (Orange) === */
 /* Leverages Bootstrap CSS variable interface to create a brand-colored outline that fills on hover */
@@ -54,8 +57,11 @@ header h1 {
 
 /* Sample passage */
 #sample-text {
-    background:#fff;
-    border:1px solid #ddd;
+    font-family: 'Fira Mono', 'Consolas', monospace;
+    background: #f9fafb;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    border: 2px solid var(--tr-orange); /* changed from #ddd */
     font-size:.85rem;
     line-height:1.35;
     max-height:120px;
@@ -69,60 +75,85 @@ header h1 {
     pointer-events: none;
 }
 
+/* Sample passage box hover effect */
+#sample-text:hover,
+.typing-wrapper:hover {
+    background: var(--tr-orange);
+    color: #fff;
+    border-color: var(--tr-orange);
+    box-shadow: 0 0 0 .2rem rgba(255,132,0,.18), 0 4px 24px rgba(0,0,0,0.10);
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+
+/* Ensure text inside turns white on hover */
+#sample-text:hover,
+#sample-text:hover * {
+    color: #fff !important;
+}
+.typing-wrapper:hover,
+.typing-wrapper:hover * {
+    color: #fff !important;
+}
+
 /* Typing highlight system */
 .typing-wrapper {
     position:relative;
     font-family:inherit;
+    border: 2px solid var(--tr-orange);
+    border-radius: 0.5rem;
+    background: #fff;
+    transition: border-color 0.2s;
 }
-#highlight-layer {
-    position:absolute;
-    inset:0;
-    padding:.5rem .75rem;
-    font-size:1rem;
-    line-height:1.5;
-    white-space:pre-wrap;
-    overflow:auto;
-    color:transparent; /* base text invisible except spans */
-    pointer-events:none;
-    border:1px solid #ced4da;
-    border-radius:.25rem;
-    background:#fff;
-}
+
+/* Typing area: white background, black text */
 #user-input {
-    position:relative;
-    background:transparent;
-    color:#000;
-    font-size:1rem;
-    line-height:1.5;
-    padding:.5rem .75rem;
-    resize:vertical;
+    background: transparent;
+    color: #111;
+    font-size: 1rem;
+    line-height: 1.5;
+    padding: .5rem .75rem;
+    border-radius: 0.5rem;
+    border: none;
+    position: relative;
+    z-index: 3;
 }
 
-/* Make scrollbars align (same box sizing) */
-#highlight-layer, #user-input {
-    box-sizing:border-box;
-    min-height:150px;
+/* Highlight overlay: white background, sits under text */
+#highlight-layer {
+    background: #fff;
+    border-radius: 0.5rem;
+    position: absolute;
+    inset: 0;
+    padding: .5rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    pointer-events: none;
+    z-index: 2;
 }
 
-/* Highlight spans */
+/* Highlighted characters */
 .hl-correct {
-    background:#d6f8d6;
-    color:#176c17;
+    background: #d6f8d6;
+    color: #176c17;
+    font-weight: bold;
 }
 .hl-incorrect {
-    background:#ffd6d6;
-    color:#a40000;
+    background: #ffd6d6;
+    color: #a40000;
+    font-weight: bold;
 }
 .hl-pending {
-    color:#bbb;
+    color: #bbb;
 }
 
 /* Results */
 #results-area {
-    border:2px solid var(--tr-orange);
+    border: 2px solid var(--tr-orange);
     border-radius:.5rem;
     padding:1.25rem 1rem;
     background:#fff;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
 }
 #results-area h2 {
     color:var(--tr-orange);
@@ -135,6 +166,20 @@ header h1 {
 }
 #best-results li {
   padding: 2px 0;
+}
+#results-area:hover {
+    background: var(--tr-orange);
+    color: #fff;
+    box-shadow: 0 0 0 .2rem rgba(255,132,0,.18), 0 4px 24px rgba(0,0,0,0.10);
+    border-color: var(--tr-orange);
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+#results-area:hover h2,
+#results-area:hover p,
+#results-area:hover li,
+#results-area:hover span {
+    color: #fff;
+    transition: color 0.2s;
 }
 
 /* === Mobile Tweaks === */
@@ -168,9 +213,70 @@ header h1 {
     filter: invert(1);
 }
 .modal-content {
+    border: 2px solid var(--tr-orange);
     border-radius: .65rem;
 }
 .modal-footer {
     background: #fff;
+}
+
+.hero-img-wrapper {
+    width: 90vw;
+    margin-left: auto;
+    margin-right: auto;
+    overflow: hidden;
+    background: #fff8f0;
+    border-radius: 1.5rem;
+}
+
+.typing-hero {
+    width: 100%;
+    max-width: none;
+    border-radius: 1.5rem;
+    box-shadow: none;
+    border: none;
+    margin: 0;
+    display: block;
+    animation: floatY 3s ease-in-out infinite;
+    background: #fff8f0;
+    object-fit: cover;
+    min-height: 180px;
+    max-height: 320px;
+}
+
+@keyframes floatY {
+    0%, 100% { transform: translateY(0);}
+    50% { transform: translateY(-14px);}
+}
+
+/* Make the Select Difficulty label orange */
+.input-group-text {
+    background: var(--tr-orange);
+    color: #fff;
+    border: 2px solid var(--tr-orange);
+    font-weight: 600;
+    transition: background 0.2s, color 0.2s;
+}
+
+/* Make the dropdown border orange and add focus/hover effect */
+.form-select {
+    border: 2px solid var(--tr-orange);
+    border-left: none;
+    color: #222;
+    font-weight: 600;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.form-select:focus {
+    border-color: var(--tr-orange);
+    box-shadow: 0 0 0 0.15rem rgba(255,132,0,0.15);
+}
+
+.text-orange { color: var(--tr-orange) !important; }
+.site-title { letter-spacing: 0.04em; }
+
+/* Only highlight overlay text turns white on hover, not the textarea */
+.typing-wrapper:hover #highlight-layer,
+.typing-wrapper:hover #highlight-layer * {
+    color: #fff !important;
 }
 
