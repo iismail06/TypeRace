@@ -1,6 +1,6 @@
 # TypeRace
 
-[View the live site here!]()
+[View the live site here!](https://iismail06.github.io/TypeRace/)
 
 ## 1. Project Goal
 
