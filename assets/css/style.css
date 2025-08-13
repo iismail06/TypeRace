@@ -5,9 +5,6 @@
 /* Brand palette + typography variables (centralize theme values) */
 :root {
 	--tr-orange: #ff8400;
-	--tr-text-light: #ffffff;
-	--tr-font-heading: 'Alegreya', serif;
-	--tr-font-body: 'Nunito', system-ui, sans-serif;
 }
 
 body {
@@ -32,16 +29,22 @@ header h1 {
 /* === Reusable Outline Button Variant (Orange) === */
 /* Leverages Bootstrap CSS variable interface to create a brand-colored outline that fills on hover */
 .btn-outline-orange {
-	--bs-btn-color: var(--tr-orange);
-	--bs-btn-border-color: var(--tr-orange);
-	--bs-btn-hover-bg: var(--tr-orange);
-	--bs-btn-hover-border-color: var(--tr-orange);
-	--bs-btn-hover-color: #fff;
-	--bs-btn-active-bg: var(--tr-orange);
-	--bs-btn-active-border-color: var(--tr-orange);
-	--bs-btn-disabled-color: #bbb;
-	--bs-btn-disabled-border-color: #ccc;
-	font-weight:600;
+    color: var(--tr-orange);
+    border: 2px solid var(--tr-orange);
+    background: transparent;
+    transition: background-color .2s, color .2s, box-shadow .2s;
+}
+
+.btn-outline-orange:hover,
+.btn-outline-orange:focus {
+    background: var(--tr-orange);
+    color: #fff;
+    box-shadow: 0 0 0 .2rem rgba(255,132,0,.25);
+}
+
+.btn-outline-orange:disabled {
+    opacity: .55;
+    cursor: not-allowed;
 }
 
 /* Text prompt area formatting */
@@ -50,6 +53,25 @@ header h1 {
 	background:#fff; /* White card look for sample passage */
 	border-radius:6px; /* Subtle rounding */
  }
+
+/* Results box with orange outline */
+#results-area {
+    border: 2px solid var(--tr-orange);
+    border-radius: .5rem;
+    padding: 1.25rem 1rem;
+    background: #fff;
+}
+
+#results-area h2 {
+    color: var(--tr-orange);
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+#results-area p {
+    margin: 0 0 .5rem;
+    font-weight: 600;
+}
 
 /* === Mobile Tweaks === */
 /* Slightly reduce padding / button size to fit narrow screens comfortably */
