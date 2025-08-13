@@ -1,159 +1,260 @@
-// Typing Test Logic
-// ------------------------------------------------------------
-// Features implemented:
-// 1. Three difficulty levels (easy / medium / hard) each with 3 passages.
-// 2. Random passage selection per difficulty.
-// 3. Start / Stop / Retry controls with timing (seconds, 2 decimals).
-// 4. WPM calculation: counts correctly typed words (matching position & spelling).
-// 5. Displays Level, Time, WPM in results panel.
-// ------------------------------------------------------------
+// Typing Test Logic (defensive version with auto highlight layer)
 
-/* ================= PASSAGE DATA ================= */
+/* PASSAGE DATA */
 const PASSAGES = {
-    easy: [
-        'The sun set and the sky turned a soft pink above the calm lake.',
-        'Typing well takes practice. Start slow and stay relaxed.',
-        'Small steps every day can build strong typing habits.'
-    ],
-    medium: [
-        'Consistent rhythm and light keystrokes help improve both accuracy and speed over weeks of deliberate effort.',
-        'When learning to type faster, focus first on precision; velocity comes naturally as your fingers trust the layout.',
-        'Erasing hesitation requires mindful repetition, balanced breaks, and posture that prevents early fatigue.'
-    ],
-    hard: [
-        'Sustained excellence in typing emerges from iterative refinement: calibrated ergonomics, disciplined drills, and reflective analysis of error patterns.',
-        'Adaptive neuromuscular coordination accelerates when feedback loops emphasize error attribution, encouraging conscious correction before automation.',
-        'Granular metrics variance in interval timing, character cluster latency, and cumulative drift enable targeted micro adjustments for peak proficiency.'
-    ]
+  easy: [
+    'The sun set and the sky turned a soft pink above the calm lake.',
+    'Typing well takes practice. Start slow and stay relaxed.',
+    'Small steps every day can build strong typing habits.'
+  ],
+  medium: [
+    'Consistent rhythm and light keystrokes help improve both accuracy and speed over weeks of deliberate effort.',
+    'When learning to type faster, focus first on precision; velocity comes naturally as your fingers trust the layout.',
+    'Erasing hesitation requires mindful repetition, balanced breaks, and posture that prevents early fatigue.'
+  ],
+  hard: [
+    'Sustained excellence in typing emerges from iterative refinement: calibrated ergonomics, disciplined drills, and reflective analysis of error patterns.',
+    'Adaptive neuromuscular coordination accelerates when feedback loops emphasize error attribution, encouraging conscious correction before automation.',
+    'Granular metrics variance in interval timing, character cluster latency, and cumulative drift enable targeted micro adjustments for peak proficiency.'
+  ]
 };
 
-/* ================= DOM REFERENCES ================= */
-const difficultySelect = document.getElementById('difficulty');
-const sampleTextEl     = document.getElementById('sample-text');
-const inputEl          = document.getElementById('user-input');
-const startBtn         = document.getElementById('start-btn');
-const stopBtn          = document.getElementById('stop-btn');
-const retryBtn         = document.getElementById('retry-btn');
-const levelSpan        = document.getElementById('level');
-const timeSpan         = document.getElementById('time');
-const wpmSpan          = document.getElementById('wpm');
+document.addEventListener('DOMContentLoaded', init);
 
-/* ================= STATE ================= */
-let testActive = false;
-let startTime  = 0;
+function init() {
+  /* DOM REFERENCES (after DOM ready) */
+  const difficultySelect = qs('#difficulty');
+  const sampleTextEl     = qs('#sample-text');
+  const inputEl          = qs('#user-input');
+  const startBtn         = qs('#start-btn');
+  const stopBtn          = qs('#stop-btn');
+  const retryBtn         = qs('#retry-btn');
+  const levelSpan        = qs('#level');
+  const timeSpan         = qs('#time');
+  const wpmSpan          = qs('#wpm');
 
-/* ================= PASSAGE FUNCTIONS ================= */
-function getRandomPassage(level) {
+  // Create highlight layer if not present
+  let highlightLayer = qs('#highlight-layer');
+  if (!highlightLayer && inputEl) {
+    const wrapper = inputEl.closest('.typing-wrapper') || wrapInput(inputEl);
+    highlightLayer = document.createElement('div');
+    highlightLayer.id = 'highlight-layer';
+    highlightLayer.setAttribute('aria-hidden', 'true');
+    wrapper.insertBefore(highlightLayer, inputEl);
+    // Basic inline styles if CSS not loaded
+    highlightLayer.style.position = 'absolute';
+    highlightLayer.style.inset = '0';
+    highlightLayer.style.padding = '.5rem .75rem';
+    highlightLayer.style.whiteSpace = 'pre-wrap';
+    highlightLayer.style.overflow = 'auto';
+    highlightLayer.style.color = 'transparent';
+  }
+
+  // Abort if essentials missing
+  if (!difficultySelect || !sampleTextEl || !inputEl || !startBtn || !stopBtn) {
+    console.error('Typing test: missing required DOM elements.');
+    return;
+  }
+
+  /* STATE */
+  let testActive = false;
+  let startTime  = 0;
+  let currentPassage = '';
+
+  /* PASSAGE / DISPLAY */
+  function getRandomPassage(level) {
     const key = (level || 'easy').toLowerCase();
     const list = PASSAGES[key] || PASSAGES.easy;
     return list[Math.floor(Math.random() * list.length)];
-}
+  }
 
-function applyNewPassage() {
+  function applyNewPassage() {
     const diff = difficultySelect.value;
-    sampleTextEl.textContent = getRandomPassage(diff);
-    levelSpan.textContent = capitalizeFirst(diff);
-}
+    currentPassage = getRandomPassage(diff);
+    sampleTextEl.textContent = currentPassage;
+    if (levelSpan) levelSpan.textContent = cap(diff);
+    resetHighlight();
+  }
 
-function capitalizeFirst(str) {
+  function cap(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
-}
+  }
 
-/* ================= WPM HELPERS ================= */
-// Return user input string trimmed
-function getUserInput() {
+  /* HIGHLIGHTING */
+  function resetHighlight() {
+    if (highlightLayer) highlightLayer.innerHTML = '';
+    inputEl.value = '';
+  }
+
+  function escapeHTML(s) {
+    return s
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;');
+  }
+
+  function buildHighlightHTML(typed, sample) {
+    let out = '';
+    const len = typed.length;
+    for (let i = 0; i < len; i++) {
+      const t = typed[i];
+      const s = sample[i];
+      const safe = escapeHTML(t);
+      if (s === undefined) {
+        out += `<span class="hl-incorrect">${safe}</span>`;
+      } else if (t === s) {
+        out += `<span class="hl-correct">${safe}</span>`;
+      } else {
+        out += `<span class="hl-incorrect">${safe}</span>`;
+      }
+    }
+    const remaining = sample.slice(len);
+    if (remaining) {
+      out += `<span class="hl-pending">${escapeHTML(remaining)}</span>`;
+    }
+    return out;
+  }
+
+  function updateHighlighting() {
+    if (!testActive) return;
+    if (!highlightLayer) return;
+    highlightLayer.innerHTML = buildHighlightHTML(inputEl.value, currentPassage);
+    syncScroll();
+  }
+
+  function syncScroll() {
+    if (!highlightLayer) return;
+    highlightLayer.scrollTop  = inputEl.scrollTop;
+    highlightLayer.scrollLeft = inputEl.scrollLeft;
+  }
+
+  /* WPM HELPERS */
+  function getUserInput() {
     return inputEl.value.trim();
-}
+  }
 
-// Count correctly typed words by position (case-sensitive)
-function countCorrectWords(sample, typed) {
+  function countCorrectWords(sample, typed) {
     if (!sample || !typed) return 0;
     const sampleWords = sample.trim().split(/\s+/);
     const typedWords  = typed.trim().split(/\s+/);
     let correct = 0;
     for (let i = 0; i < typedWords.length && i < sampleWords.length; i++) {
-        if (typedWords[i] === sampleWords[i]) correct++;
+      if (typedWords[i] === sampleWords[i]) correct++;
     }
     return correct;
-}
+  }
 
-// Compute whole-number WPM (words per minute)
-function computeWPM(correctWords, elapsedSeconds) {
+  function computeWPM(correctWords, elapsedSeconds) {
     if (elapsedSeconds <= 0) return 0;
     return Math.round(correctWords / (elapsedSeconds / 60));
-}
+  }
 
-/* ================= TEST CONTROL FUNCTIONS ================= */
-function startTest() {
+  /* TEST CONTROL */
+  function startTest() {
     if (testActive) return;
     testActive = true;
     startTime = performance.now();
-    timeSpan.textContent = '0.00';
-    wpmSpan.textContent = '0';
+    if (timeSpan) timeSpan.textContent = '0.00';
+    if (wpmSpan) wpmSpan.textContent = '0';
     inputEl.disabled = false;
-    inputEl.value = '';
+    resetHighlight();
+    if (highlightLayer) {
+      highlightLayer.innerHTML = buildHighlightHTML('', currentPassage);
+    }
     inputEl.focus();
     startBtn.disabled = true;
     stopBtn.disabled = false;
     difficultySelect.disabled = true;
-}
 
-function stopTest() {
+    fadeOutSample();
+  }
+
+  function stopTest() {
     if (!testActive) return;
     const elapsedSec = (performance.now() - startTime) / 1000;
-    timeSpan.textContent = elapsedSec.toFixed(2);
-
-    // WPM calculation
-    const sample = sampleTextEl.textContent.trim();
-    const typed  = getUserInput();
-    const correctWords = countCorrectWords(sample, typed);
-    const wpm = computeWPM(correctWords, elapsedSec);
-    wpmSpan.textContent = wpm.toString();
-
+    if (timeSpan) timeSpan.textContent = elapsedSec.toFixed(2);
+    const correctWords = countCorrectWords(currentPassage, getUserInput());
+    if (wpmSpan) wpmSpan.textContent = computeWPM(correctWords, elapsedSec).toString();
     testActive = false;
     startBtn.disabled = false;
     stopBtn.disabled = true;
     difficultySelect.disabled = false;
     inputEl.disabled = true;
-}
 
-function resetTestState() {
+    fadeInSample();
+  }
+
+  function resetTestState() {
     testActive = false;
     startTime = 0;
-    timeSpan.textContent = '0.00';
-    wpmSpan.textContent = '0';
+    if (timeSpan) timeSpan.textContent = '0.00';
+    if (wpmSpan) wpmSpan.textContent = '0';
     inputEl.value = '';
     inputEl.disabled = true;
+    if (highlightLayer) highlightLayer.innerHTML = '';
     startBtn.disabled = false;
     stopBtn.disabled = true;
     difficultySelect.disabled = false;
-}
 
-/* ================= EVENT LISTENERS ================= */
-startBtn.addEventListener('click', () => {
-    if (!sampleTextEl.textContent.trim()) applyNewPassage();
+    fadeInSample();
+  }
+
+  /* EVENTS */
+  inputEl.addEventListener('input', updateHighlighting);
+  inputEl.addEventListener('scroll', syncScroll);
+  startBtn.addEventListener('click', () => {
+    if (!currentPassage) applyNewPassage();
     startTest();
-});
-
-stopBtn.addEventListener('click', stopTest);
-
-retryBtn.addEventListener('click', () => {
+  });
+  stopBtn.addEventListener('click', stopTest);
+  retryBtn.addEventListener('click', () => {
     if (testActive) stopTest();
     resetTestState();
     applyNewPassage();
-});
-
-difficultySelect.addEventListener('change', () => {
-    if (testActive) return; // block mid-test change
+  });
+  difficultySelect.addEventListener('change', () => {
+    if (testActive) return;
     applyNewPassage();
     resetTestState();
-});
+  });
 
-/* ================= INIT ================= */
-function init() {
-    applyNewPassage();
-    resetTestState();
-    // Ensure initial level label matches dropdown default
-    levelSpan.textContent = capitalizeFirst(difficultySelect.value);
+  /* INIT */
+  applyNewPassage();
+  resetTestState();
+  // Minimal inline fallback styles for highlighting (if CSS missing)
+  injectFallbackStyles();
 }
-document.addEventListener('DOMContentLoaded', init);
+
+/* UTILITIES */
+function qs(sel) { return document.querySelector(sel); }
+
+function wrapInput(inputEl) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'typing-wrapper';
+  inputEl.parentNode.insertBefore(wrapper, inputEl);
+  wrapper.appendChild(inputEl);
+  return wrapper;
+}
+
+function injectFallbackStyles() {
+  if (document.getElementById('typing-fallback-styles')) return;
+  const css = `
+  .hl-correct{background:#d6f8d6;color:#176c17;}
+  .hl-incorrect{background:#ffd6d6;color:#a40000;}
+  .hl-pending{color:#bbb;}
+  .typing-wrapper{position:relative;}
+  #highlight-layer{color:transparent;}
+  `;
+  const style = document.createElement('style');
+  style.id = 'typing-fallback-styles';
+  style.textContent = css;
+  document.head.appendChild(style);
+}
+
+function fadeOutSample() {
+  sampleTextEl.classList.add('is-fading-out');
+}
+
+function fadeInSample() {
+  sampleTextEl.classList.remove('is-fading-out');
+}

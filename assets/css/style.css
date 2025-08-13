@@ -1,83 +1,144 @@
-@import url('https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400..900;1,400..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Alegreya:wght@600;700&family=Nunito:wght@400;600;700&display=swap');
 /* Google Fonts import: Alegreya (headings), Nunito (body) */
 
 
 /* Brand palette + typography variables (centralize theme values) */
 :root {
-	--tr-orange: #ff8400;
+    --tr-orange:#ff8400;
+    --tr-font-heading:'Alegreya',serif;
+    --tr-font-body:'Nunito',sans-serif;
+    --tr-text-light:#fff;
+    --tr-bg:#fafafa;
 }
 
 body {
-	font-family: var(--tr-font-body); /* Apply base body font */
-	margin: 0; /* Remove default browser margin */
-	background: #fafafa; /* Soft light grey background for contrast */
-	color: #222; /* High contrast readable text color */
+    font-family:var(--tr-font-body);
+    background:var(--tr-bg);
+    margin:0;
+    color:#222;
 }
 
 /* === Header Bar === */
 /* Solid orange strip with white text; inherits brand variables */
 header {
-	background: var(--tr-orange);
-	color: var(--tr-text-light);
+    background:var(--tr-orange);
+    color:var(--tr-text-light);
 }
-header h1 { 
-	font-family: var(--tr-font-heading); /* Distinct serif heading */
-	font-weight:700; 
-	color: var(--tr-text-light); 
+header h1 {
+    font-family:var(--tr-font-heading);
+    font-weight:700;
+    margin:0;
+    color:var(--tr-text-light);
 }
 
 /* === Reusable Outline Button Variant (Orange) === */
 /* Leverages Bootstrap CSS variable interface to create a brand-colored outline that fills on hover */
 .btn-outline-orange {
-    color: var(--tr-orange);
-    border: 2px solid var(--tr-orange);
-    background: transparent;
-    transition: background-color .2s, color .2s, box-shadow .2s;
+    color:var(--tr-orange);
+    border:2px solid var(--tr-orange);
+    background:transparent;
+    transition:.2s;
 }
 
 .btn-outline-orange:hover,
 .btn-outline-orange:focus {
-    background: var(--tr-orange);
-    color: #fff;
-    box-shadow: 0 0 0 .2rem rgba(255,132,0,.25);
+    background:var(--tr-orange);
+    color:#fff;
+    box-shadow:0 0 0 .2rem rgba(255,132,0,.25);
 }
 
 .btn-outline-orange:disabled {
-    opacity: .55;
-    cursor: not-allowed;
+    opacity:.55;
+    cursor:not-allowed;
 }
 
-/* Text prompt area formatting */
-.test-area .lead { font-size:1rem; }
-#sample-text { 
-	background:#fff; /* White card look for sample passage */
-	border-radius:6px; /* Subtle rounding */
- }
+/* Sample passage */
+#sample-text {
+    background:#fff;
+    border:1px solid #ddd;
+    font-size:.85rem;
+    line-height:1.35;
+    max-height:120px;
+    overflow-y:auto;
+    white-space:pre-wrap;
+    transition: opacity .3s ease;
+}
 
-/* Results box with orange outline */
+#sample-text.is-fading-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Typing highlight system */
+.typing-wrapper {
+    position:relative;
+    font-family:inherit;
+}
+#highlight-layer {
+    position:absolute;
+    inset:0;
+    padding:.5rem .75rem;
+    font-size:1rem;
+    line-height:1.5;
+    white-space:pre-wrap;
+    overflow:auto;
+    color:transparent; /* base text invisible except spans */
+    pointer-events:none;
+    border:1px solid #ced4da;
+    border-radius:.25rem;
+    background:#fff;
+}
+#user-input {
+    position:relative;
+    background:transparent;
+    color:#000;
+    font-size:1rem;
+    line-height:1.5;
+    padding:.5rem .75rem;
+    resize:vertical;
+}
+
+/* Make scrollbars align (same box sizing) */
+#highlight-layer, #user-input {
+    box-sizing:border-box;
+    min-height:150px;
+}
+
+/* Highlight spans */
+.hl-correct {
+    background:#d6f8d6;
+    color:#176c17;
+}
+.hl-incorrect {
+    background:#ffd6d6;
+    color:#a40000;
+}
+.hl-pending {
+    color:#bbb;
+}
+
+/* Results */
 #results-area {
-    border: 2px solid var(--tr-orange);
-    border-radius: .5rem;
-    padding: 1.25rem 1rem;
-    background: #fff;
+    border:2px solid var(--tr-orange);
+    border-radius:.5rem;
+    padding:1.25rem 1rem;
+    background:#fff;
 }
-
 #results-area h2 {
-    color: var(--tr-orange);
-    font-weight: 700;
-    margin-bottom: 1rem;
+    color:var(--tr-orange);
+    font-weight:700;
+    margin-bottom:1rem;
 }
-
 #results-area p {
-    margin: 0 0 .5rem;
-    font-weight: 600;
+    margin:0 0 .6rem;
+    font-weight:600;
 }
 
 /* === Mobile Tweaks === */
 /* Slightly reduce padding / button size to fit narrow screens comfortably */
 @media (max-width: 575.98px) {
 	header .my-4 { margin-top:1.5rem !important; margin-bottom:1.5rem !important; }
-	.btn-lg { padding:0.55rem 1.1rem; font-size:1rem; }
+	.btn-lg { padding:0.55rem 1.05rem; font-size:1rem; }
 }
 
 /* Legacy selectors (.tr-header/.tr-instructions-btn) retained earlier in case of revert; safe to remove later if unused */
