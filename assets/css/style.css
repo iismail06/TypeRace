@@ -153,3 +153,21 @@ header h1 {
 	}
 }
 
+/* === Instructions Modal Styling (brand theming) === */
+.modal-header {
+    background: var(--tr-orange);
+    color: #fff;
+}
+.modal-header .modal-title {
+    font-weight: 600;
+}
+.modal-header .btn-close {
+    filter: invert(1);
+}
+.modal-content {
+    border-radius: .65rem;
+}
+.modal-footer {
+    background: #fff;
+}
+
